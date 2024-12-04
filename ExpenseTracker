@@ -1,0 +1,83 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class ExpenseTracker {
+    private Frame mainFrame;
+    private TextField descriptionField, amountField;
+    private TextArea expenseList;
+    private Label totalLabel;
+    private ArrayList<String> expenses;
+    private double totalExpense;
+
+    public ExpenseTracker() {
+        expenses = new ArrayList<>();
+        totalExpense = 0.0;
+        prepareGUI();
+    }
+
+    public static void main(String[] args) {
+        ExpenseTracker tracker = new ExpenseTracker();
+        tracker.showEventDemo();
+    }
+
+    private void prepareGUI() {
+        mainFrame = new Frame("Expense Tracker");
+        mainFrame.setSize(400, 400);
+        mainFrame.setLayout(new FlowLayout());
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent) {
+                System.exit(0);
+            }
+        });
+
+        Label descriptionLabel = new Label("Description:");
+        Label amountLabel = new Label("Amount:");
+
+        descriptionField = new TextField(20);
+        amountField = new TextField(10);
+
+        Button addButton = new Button("Add Expense");
+        addButton.addActionListener(new AddExpenseListener());
+
+        expenseList = new TextArea(10, 40);
+        expenseList.setEditable(false);
+
+        totalLabel = new Label("Total: $0.00");
+
+        mainFrame.add(descriptionLabel);
+        mainFrame.add(descriptionField);
+        mainFrame.add(amountLabel);
+        mainFrame.add(amountField);
+        mainFrame.add(addButton);
+        mainFrame.add(expenseList);
+        mainFrame.add(totalLabel);
+
+        mainFrame.setVisible(true);
+    }
+
+    private void showEventDemo() {
+        // GUI is ready, interaction is handled by the listener
+    }
+
+    class AddExpenseListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String description = descriptionField.getText();
+            String amountText = amountField.getText();
+            try {
+                double amount = Double.parseDouble(amountText);
+                totalExpense += amount;
+                String expenseEntry = description + " - $" + String.format("%.2f", amount);
+                expenses.add(expenseEntry);
+                expenseList.append(expenseEntry + "\n");
+                totalLabel.setText("Total: $" + String.format("%.2f", totalExpense));
+                descriptionField.setText("");
+                amountField.setText("");
+            } catch (NumberFormatException ex) {
+                // Handle invalid number input
+                amountField.setText("");
+                totalLabel.setText("Invalid amount! Please enter a number.");
+            }
+        }
+    }
+}
